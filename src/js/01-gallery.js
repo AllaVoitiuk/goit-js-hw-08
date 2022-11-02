@@ -1,56 +1,35 @@
 // Add imports above this line
 import { galleryItems } from './gallery-items';
 // Change code below this line
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
 console.log(galleryItems);
 
-let instance;
 const galleryContainer = document.querySelector(".gallery");
 const cardGallery = createGalleryMarkup(galleryItems);
-
+ 
 galleryContainer.insertAdjacentHTML('beforeend',cardGallery);
-galleryContainer.addEventListener ("click", onGalleryContainerClick);
+galleryContainer.addEventListener ("click", onGalleryContainerClick, {once:true});
+
+let lightbox = new SimpleLightbox('.gallery a', {captionsData: 'alt', captionDelay: 250});
 
 function createGalleryMarkup(items) {
     return items
     .map (({preview,original,description}) => {
-        return `<div class="gallery__item">
-        <a class="gallery__link" href=${original} target="_self">
-          <img
-            class="gallery__image"
-            src=${preview}
-            data-source=${original}
-            alt=${description}/>
-        </a>
-      </div>`;
+        return `<a class="gallery__item" href=${original}>
+        <img class="gallery__image" src=${preview} alt=${description} />
+      </a>`;
     })
     .join("");
-}
+ }
 
-function onGalleryContainerClick(event) {
-  
-  const original = event.target.dataset.source;
-  const description = event.target.alt;  
+    function onGalleryContainerClick(event) {   
 
-  event.preventDefault();
-
-  if (!event.target.classList.contains("gallery__image")) {
-      return; 
-  }
-  instance = basicLightbox.create(`
-  <img src=${original} alt=${description} width="800" height="600"> `)
+    if(event.target.nodeName !== "IMG"){
+        return;
+    }
+   
+    event.preventDefault();
     
-  instance.show();
-
-  document.addEventListener("keydown", onKeyEsc);  
-}
-
-function onKeyEsc (event) {
-  console.log("event.key: " + event.key);
-   if (event.key === 'Escape') {
-    
-    instance.close();
-    document.removeEventListener("keydown", onKeyEsc);
-      
-  }
 }
